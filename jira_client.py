@@ -26,8 +26,12 @@ class JiraError(Exception):
 
 
 class JiraClient:
-    def __init__(self, base_url: str, email: str, api_token: str):
+    def __init__(self, base_url: str, email: str, api_token: str,
+                 browse_base_url: str = ""):
         self.base_url = base_url.rstrip("/")
+        # Human-facing links; differs from base_url when calls go through the
+        # api.atlassian.com gateway (service-account tokens).
+        self.browse_base_url = (browse_base_url or base_url).rstrip("/")
         self._session = requests.Session()
         self._session.auth = HTTPBasicAuth(email, api_token)
         self._session.headers.update(
@@ -48,7 +52,7 @@ class JiraClient:
         resp = self._post_with_retry(
             f"{self.base_url}/rest/servicedeskapi/request", payload)
         key = resp.json()["issueKey"]
-        return key, f"{self.base_url}/browse/{key}"
+        return key, f"{self.browse_base_url}/browse/{key}"
 
     def update_issue(self, issue_key: str, description_adf: dict,
                      labels: list) -> None:
@@ -75,7 +79,7 @@ class JiraClient:
         if not issues:
             return None
         key = issues[0]["key"]
-        return key, f"{self.base_url}/browse/{key}"
+        return key, f"{self.browse_base_url}/browse/{key}"
 
     def _post_with_retry(self, url: str, payload: dict):
         resp = self._session.post(url, json=payload, timeout=TIMEOUT_SECONDS)

@@ -45,6 +45,15 @@ multiple instances).
    <https://id.atlassian.com/manage-profile/security/api-tokens>.
 2. The account needs **agent access** to the service desk project (to create
    requests and edit issues for the labels/description follow-up).
+
+   **Atlassian service accounts** (created in admin.atlassian.com, [docs](https://support.atlassian.com/user-management/docs/manage-api-tokens-for-service-accounts/))
+   must call the platform gateway instead of the site URL. Same Basic auth,
+   different base URL:
+
+   ```sh
+   JIRA_BASE_URL=https://api.atlassian.com/ex/jira/<cloud-id>
+   JIRA_BROWSE_BASE_URL=https://tenstorrent.atlassian.net
+   ```
 3. Find the service desk and request type IDs if they differ from the
    defaults: `GET /rest/servicedeskapi/servicedesk` lists desks,
    `GET /rest/servicedeskapi/servicedesk/{id}/requesttype` lists request
@@ -72,7 +81,8 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 | `DISCORD_BOT_TOKEN` | yes | Bot token from the Developer Portal |
 | `DISCORD_FORUM_CHANNEL_ID` | yes | The forum channel to watch |
 | `DISCORD_TEAM_ROLE_IDS` | no | Comma-separated role IDs that may trigger tickets (besides the thread author) |
-| `JIRA_BASE_URL` | yes | e.g. `https://tenstorrent.atlassian.net` |
+| `JIRA_BASE_URL` | yes | Site URL, or `https://api.atlassian.com/ex/jira/<cloud-id>` for service-account tokens |
+| `JIRA_BROWSE_BASE_URL` | no | Site URL for human-facing links when `JIRA_BASE_URL` is the api.atlassian.com gateway |
 | `JIRA_EMAIL` / `JIRA_API_TOKEN` | yes | Service-account credentials (agent) |
 | `JIRA_SERVICE_DESK_ID` | yes | JSM service desk ID (CUST = `1`) |
 | `JIRA_REQUEST_TYPE_ID` | yes | Request type ID (CUST "General Support" = `108`) |

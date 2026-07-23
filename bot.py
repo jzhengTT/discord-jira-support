@@ -30,7 +30,8 @@ intents.guild_reactions = True
 intents.message_content = True  # privileged: enable in the Developer Portal
 
 bot = discord.Client(intents=intents)
-jira = JiraClient(config.JIRA_BASE_URL, config.JIRA_EMAIL, config.JIRA_API_TOKEN)
+jira = JiraClient(config.JIRA_BASE_URL, config.JIRA_EMAIL, config.JIRA_API_TOKEN,
+                  browse_base_url=config.JIRA_BROWSE_BASE_URL)
 
 # Serializes check->create for near-simultaneous reactions within this
 # process; across restarts/instances the Jira label search is the (eventually

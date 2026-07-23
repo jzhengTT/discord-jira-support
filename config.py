@@ -27,6 +27,9 @@ DISCORD_TEAM_ROLE_IDS = frozenset(
 )
 
 JIRA_BASE_URL = os.environ.get("JIRA_BASE_URL", "").rstrip("/")
+# Human-facing /browse links; set when JIRA_BASE_URL is the api.atlassian.com
+# gateway (service-account tokens). Defaults to JIRA_BASE_URL.
+JIRA_BROWSE_BASE_URL = os.environ.get("JIRA_BROWSE_BASE_URL", "").rstrip("/")
 JIRA_EMAIL = os.environ.get("JIRA_EMAIL", "")
 JIRA_API_TOKEN = os.environ.get("JIRA_API_TOKEN", "")
 JIRA_SERVICE_DESK_ID = os.environ.get("JIRA_SERVICE_DESK_ID", "")

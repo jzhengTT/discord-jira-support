@@ -36,11 +36,34 @@ class FakeSession:
 ADF = {"type": "doc", "version": 1, "content": []}
 
 
-def make_client(responses):
-    client = JiraClient("https://x.atlassian.net", "svc@example.com", "tok")
+def make_client(responses, **kwargs):
+    client = JiraClient("https://x.atlassian.net", "svc@example.com", "tok", **kwargs)
     fake = FakeSession(responses)
     client._session = fake
     return client, fake
+
+
+def test_browse_url_uses_browse_base_when_configured():
+    client, fake = make_client(
+        [FakeResponse(201, {"issueKey": "CUST-5"})],
+        browse_base_url="https://x.atlassian.net",
+    )
+    client.base_url = "https://api.atlassian.com/ex/jira/abc123"
+
+    key, url = client.create_request(service_desk_id="1", request_type_id="108",
+                                     summary="s", description_text="d")
+
+    assert fake.calls[0]["url"].startswith("https://api.atlassian.com/ex/jira/abc123/")
+    assert url == "https://x.atlassian.net/browse/CUST-5"
+
+
+def test_browse_url_defaults_to_base_url():
+    client, _ = make_client([FakeResponse(201, {"issueKey": "CUST-5"})])
+
+    _, url = client.create_request(service_desk_id="1", request_type_id="108",
+                                   summary="s", description_text="d")
+
+    assert url == "https://x.atlassian.net/browse/CUST-5"
 
 
 def test_create_request_returns_key_and_browse_url():
